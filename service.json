@@ -1,0 +1,44 @@
+[
+    {
+        "name": "jenkins",
+        "image": "jenkins/jenkins:2.222.1",
+        "cpu": 1024,
+        "memory": 4096,
+        "portMappings": [
+            {
+                "containerPort": 8080,
+                "hostPort": 8080,
+                "protocol": "tcp"
+            }
+        ],
+        "essential": true,
+        "mountPoints": [
+            {
+                "sourceVolume": "efs_backend",
+                "containerPath": "/var/jenkins_home",
+                "readOnly": false
+            }
+        ],
+        "disableNetworking": false,
+        "privileged": false,
+        "interactive": false,
+        "logConfiguration": {
+            "logDriver": "awslogs",
+            "options": {
+                "awslogs-group": "/ecs/jenkins",
+                "awslogs-region": "us-east-1",
+                "awslogs-stream-prefix": "ecs"
+            }
+        },
+        "healthCheck": {
+            "command": [
+                "CMD-SHELL",
+                "curl -f http://localhost:8080/login || exit 1"
+            ],
+            "interval": 30,
+            "timeout": 10,
+            "retries": 3,
+            "startPeriod": 120
+        }
+    }
+]
